@@ -21,7 +21,7 @@ buddy de pair programming. Práticas adotadas:
 
 - **TDD obrigatório**: todo código de produção nasce de um teste que falha
   primeiro (red → green → refactor). Nenhuma feature ou fix entra sem teste
-  escrito antes da implementação (alinhado à Regra 10 e Regra 5 do CLAUDE.md).
+  escrito antes da implementação.
 - **Passos pequenos**: cada ciclo red-green-refactor é a menor fatia possível
   — um endpoint, uma regra de negócio, uma validação por vez.
 - **Refactor contínuo**: depois de verde, limpar duplicação antes de seguir
@@ -29,7 +29,7 @@ buddy de pair programming. Práticas adotadas:
 - **Pair programming**: usuário e Claude revisam juntos cada ciclo antes de
   avançar — Claude não deve implementar lotes grandes sem checkpoint.
 - **Integração contínua**: commits pequenos e frequentes, sempre com suíte
-  verde (Regra 5 — cada commit deixa o sistema funcional).
+  verde.
 
 O plano de implementação (próxima etapa) deve quebrar cada feature do MVP em
 ciclos TDD explícitos, não em tarefas genéricas "implementar X".
@@ -37,8 +37,8 @@ ciclos TDD explícitos, não em tarefas genéricas "implementar X".
 ## Arquitetura
 
 - **API**: Ruby on Rails 7 em modo `--api`.
-- **Banco**: SQLite (Regra 18 — Punk Computing; suficiente para 5-10 usuários,
-  zero infra extra).
+- **Banco**: SQLite (free tier / zero infra extra, suficiente para 5-10
+  usuários).
 - **Cliente**: Flutter/Dart, codebase único servindo web e mobile
   (iOS/Android), consumindo a API via REST/JSON.
 - **Auth**: JWT manual (gem `jwt` + `has_secure_password`/`bcrypt`), sem
