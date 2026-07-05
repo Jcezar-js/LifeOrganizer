@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   has_secure_password
 
+  has_many :project_memberships, dependent: :destroy
+  has_many :projects, through: :project_memberships
+
   normalizes :email, with: ->(email) { email.strip.downcase }
 
   validates :email, presence: true,

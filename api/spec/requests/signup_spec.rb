@@ -18,11 +18,10 @@ RSpec.describe "POST /signup", type: :request do
 
       expect(response).to have_http_status(:created)
       body = response.parsed_body
+      expect(body.keys).to match_array(%w[id email name])
       expect(body["id"]).to be_present
       expect(body["email"]).to eq("julio@example.com")
       expect(body["name"]).to eq("Julio")
-      expect(body).not_to have_key("password_digest")
-      expect(body).not_to have_key("password")
     end
 
     it "cria o User no banco" do
@@ -53,6 +52,33 @@ RSpec.describe "POST /signup", type: :request do
       signup(valid_attrs.merge(password: "!" + "a" * 71))
 
       expect(response).to have_http_status(:created)
+    end
+  end
+
+  context "project pessoal automático" do
+    it "cria exatamente 1 Project Inbox com personal true e membership role owner" do
+      signup(valid_attrs)
+
+      user = User.find(response.parsed_body["id"])
+      expect(user.projects.count).to eq(1)
+
+      inbox = user.projects.first
+      expect(inbox.name).to eq("Inbox")
+      expect(inbox.personal).to be(true)
+      expect(inbox.owner).to eq(user)
+
+      expect(user.project_memberships.count).to eq(1)
+      expect(user.project_memberships.first.role).to eq("owner")
+      expect(inbox.members).to contain_exactly(user)
+    end
+
+    it "não persiste User nem Project se a criação do Inbox falhar (atomicidade)" do
+      allow(Project).to receive(:create!).and_raise(ActiveRecord::RecordInvalid)
+
+      expect { signup(valid_attrs) }.not_to change(User, :count)
+      expect(Project.count).to eq(0)
+      expect(response).to have_http_status(:internal_server_error)
+      expect(response.parsed_body["errors"]).to be_present
     end
   end
 

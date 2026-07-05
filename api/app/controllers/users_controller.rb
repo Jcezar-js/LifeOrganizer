@@ -8,8 +8,8 @@ class UsersController < ApplicationController
   def create
     user = User.new(user_params)
 
-    if user.save
-      Rails.logger.info("signup: user criado id=#{user.id}")
+    if save_with_inbox(user)
+      Rails.logger.info("signup: user criado id=#{user.id} com Inbox")
       render json: user.as_json(only: [ :id, :email, :name ]), status: :created
     else
       Rails.logger.warn("signup: validação falhou (#{user.errors.attribute_names.join(', ')})")
@@ -18,6 +18,18 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # Transação explícita no controller (não callback no model) — efeito colateral
+  # visível no fluxo do signup. Falhou qualquer parte → nada persiste.
+  def save_with_inbox(user)
+    ActiveRecord::Base.transaction do
+      next false unless user.save
+
+      inbox = Project.create!(name: "Inbox", owner: user, personal: true)
+      ProjectMembership.create!(project: inbox, user: user, role: :owner)
+      true
+    end
+  end
 
   def user_params
     params.require(:user).permit(:email, :password, :name)
