@@ -29,7 +29,7 @@ cada um com spec próprio em `docs/superpowers/specs/`:
 
 ## Stack
 
-- **API**: Ruby on Rails 7 (`--api` mode)
+- **API**: Ruby on Rails 8 (`--api` mode) — em `api/`, Ruby 3.4 via rbenv
 - **Banco**: SQLite
 - **Cliente**: Flutter/Dart — codebase único (web + mobile iOS/Android)
 - **Auth**: JWT manual (gem `jwt` + `has_secure_password`), sem Devise
@@ -50,13 +50,11 @@ Acesso a dados sempre resolvido via `ProjectMembership` — nunca
 
 ## Comandos
 
-_A preencher conforme o projeto Rails/Flutter for inicializado._
-
 ```bash
-# API (Rails) — dev
+# API (Rails) — dev (a partir de api/)
 bin/rails server
 
-# API (Rails) — testes
+# API (Rails) — testes (a partir de api/)
 bundle exec rspec
 
 # Flutter — dev (web)
